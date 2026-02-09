@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Clock, CheckCircle, List, ExternalLink, Trash2, RotateCcw, Check, X } from 'lucide-react'
+import { Clock, CheckCircle, List, ExternalLink, Trash2, RotateCcw, Check, X, LinkIcon, Loader2, AlertTriangle, CheckCircle2 } from 'lucide-react'
 
 interface Grupo {
     id: number
@@ -14,10 +14,19 @@ interface Grupo {
     created_at: string
 }
 
+interface LinkValidation {
+    valid: boolean
+    type: 'whatsapp' | 'telegram' | 'unknown'
+    isActive: boolean | null
+    message: string
+}
+
 export default function AdminPage() {
     const [grupos, setGrupos] = useState<Grupo[]>([])
     const [loading, setLoading] = useState(true)
     const [filtro, setFiltro] = useState<'pendente' | 'aprovado' | 'todos'>('pendente')
+    const [validatingLinks, setValidatingLinks] = useState<Set<number>>(new Set())
+    const [linkStatus, setLinkStatus] = useState<Record<number, LinkValidation>>({})
 
     useEffect(() => {
         const fetchGrupos = async () => {
@@ -34,6 +43,36 @@ export default function AdminPage() {
         }
         fetchGrupos()
     }, [filtro])
+
+    const validarLink = async (grupo: Grupo) => {
+        setValidatingLinks(prev => new Set(prev).add(grupo.id))
+        try {
+            const res = await fetch('/api/validate-link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ link: grupo.link, checkActive: true })
+            })
+            const data: LinkValidation = await res.json()
+            setLinkStatus(prev => ({ ...prev, [grupo.id]: data }))
+        } catch (error) {
+            setLinkStatus(prev => ({
+                ...prev,
+                [grupo.id]: { valid: false, type: 'unknown', isActive: null, message: 'Erro ao validar' }
+            }))
+        } finally {
+            setValidatingLinks(prev => {
+                const next = new Set(prev)
+                next.delete(grupo.id)
+                return next
+            })
+        }
+    }
+
+    const validarTodosLinks = async () => {
+        for (const grupo of grupos) {
+            await validarLink(grupo)
+        }
+    }
 
     const atualizarStatus = async (id: number, novoStatus: string) => {
         try {
@@ -72,9 +111,46 @@ export default function AdminPage() {
         { id: 'todos', label: 'Todos', icon: List, color: 'text-slate-400' },
     ] as const
 
+    const getLinkStatusBadge = (grupoId: number) => {
+        const status = linkStatus[grupoId]
+        if (!status) return null
+
+        if (status.valid && status.isActive !== false) {
+            return (
+                <span className="inline-flex items-center gap-1 text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {status.type === 'whatsapp' ? 'WhatsApp' : 'Telegram'} válido
+                </span>
+            )
+        } else if (!status.valid) {
+            return (
+                <span className="inline-flex items-center gap-1 text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">
+                    <X className="w-3 h-3" />
+                    Link inválido
+                </span>
+            )
+        } else {
+            return (
+                <span className="inline-flex items-center gap-1 text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">
+                    <AlertTriangle className="w-3 h-3" />
+                    Pode estar inativo
+                </span>
+            )
+        }
+    }
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold text-white mb-6">Gerenciar Grupos</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-white">Gerenciar Grupos</h1>
+                <button
+                    onClick={validarTodosLinks}
+                    className="text-sm bg-blue-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
+                >
+                    <LinkIcon className="w-4 h-4" />
+                    Validar Todos os Links
+                </button>
+            </div>
 
             {/* Filtros */}
             <div className="flex gap-2 mb-8">
@@ -147,10 +223,31 @@ export default function AdminPage() {
                                             {grupo.destaque && <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-bold">⭐ Destaque</span>}
                                         </div>
                                     </div>
-                                    <a href={grupo.link} target="_blank" rel="noopener noreferrer" className="text-sm text-emerald-400 hover:underline mt-2 flex items-center gap-1">
-                                        <ExternalLink className="w-3 h-3" />
-                                        <span className="truncate max-w-xs">{grupo.link}</span>
-                                    </a>
+
+                                    {/* Link com validação */}
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <a href={grupo.link} target="_blank" rel="noopener noreferrer" className="text-sm text-emerald-400 hover:underline flex items-center gap-1">
+                                            <ExternalLink className="w-3 h-3" />
+                                            <span className="truncate max-w-xs">{grupo.link}</span>
+                                        </a>
+
+                                        {validatingLinks.has(grupo.id) ? (
+                                            <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                                Validando...
+                                            </span>
+                                        ) : linkStatus[grupo.id] ? (
+                                            getLinkStatusBadge(grupo.id)
+                                        ) : (
+                                            <button
+                                                onClick={() => validarLink(grupo)}
+                                                className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                            >
+                                                <LinkIcon className="w-3 h-3" />
+                                                Validar
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
