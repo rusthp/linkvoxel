@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { Group } from '@/types/group'
+import { Users, ExternalLink } from 'lucide-react'
 
 interface GroupCardProps {
     grupo: Group
@@ -30,96 +30,89 @@ export default function GroupCard({ grupo }: GroupCardProps) {
 
     return (
         <div
-            className={`bg-white rounded-2xl border ${grupo.destaque ? 'border-violet-300 ring-2 ring-violet-100' : 'border-slate-200'} hover:shadow-xl transition-all duration-300 flex flex-col h-full group overflow-hidden relative`}
+            className={`bg-slate-800 rounded-xl border ${grupo.destaque ? 'border-emerald-500/50' : 'border-slate-700'} hover:border-emerald-500/50 transition-all duration-200 flex flex-col h-full group overflow-hidden`}
         >
             {/* Badge de Destaque */}
             {grupo.destaque && (
-                <div className="absolute top-4 right-4 z-10">
-                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg">
-                        🔥 EM ALTA
+                <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-4 py-2">
+                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                        🔥 EM DESTAQUE
                     </span>
                 </div>
             )}
 
-            <div className="p-6 flex-1">
-                {grupo.imagem_url ? (
-                    <div className="mb-5 rounded-xl overflow-hidden h-32 w-full relative group-hover:shadow-md transition-all">
-                        <img
-                            src={grupo.imagem_url}
-                            alt={grupo.nome}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            onError={(e) => {
-                                // Fallback se a imagem quebrar
-                                (e.target as HTMLImageElement).style.display = 'none';
-                                const fallback = (e.target as HTMLImageElement).nextElementSibling;
-                                if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                            }}
-                        />
-                        {/* Fallback Icon (escondido) */}
-                        <div
-                            className={`hidden w-full h-full absolute inset-0 ${grupo.destaque ? 'bg-gradient-to-br from-violet-50 to-purple-50' : 'bg-gradient-to-br from-blue-50 to-violet-50'} items-center justify-center text-4xl`}
-                        >
-                            {categoryIcon}
-                        </div>
+            {/* Imagem do Grupo */}
+            {grupo.imagem_url ? (
+                <div className="w-full h-32 overflow-hidden bg-slate-700 relative">
+                    <img
+                        src={grupo.imagem_url}
+                        alt={grupo.nome}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                            const fallback = (e.target as HTMLImageElement).nextElementSibling;
+                            if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                        }}
+                    />
+                    {/* Fallback se imagem quebrar */}
+                    <div className="hidden w-full h-full absolute inset-0 bg-slate-700 items-center justify-center text-4xl">
+                        {categoryIcon}
                     </div>
-                ) : (
-                    <div className="flex justify-between items-start mb-5">
-                        <div className={`w-12 h-12 rounded-xl ${grupo.destaque ? 'bg-gradient-to-br from-violet-50 to-purple-50' : 'bg-gradient-to-br from-blue-50 to-violet-50'} border border-slate-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform`}>
+                </div>
+            ) : null}
+
+            <div className="p-5 flex-1">
+                {/* Header: Icon + Categoria (só mostra se não tem imagem) */}
+                {!grupo.imagem_url && (
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="w-12 h-12 bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-xl">
                             {categoryIcon}
                         </div>
-                        {!grupo.destaque && (
-                            <span className="text-[10px] font-extrabold tracking-widest uppercase text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
-                                {grupo.categoria}
-                            </span>
-                        )}
                     </div>
                 )}
 
-                <div className="relative">
-                    {grupo.imagem_url && !grupo.destaque && (
-                        <div className="absolute -top-16 right-0">
-                            <span className="text-[10px] font-extrabold tracking-widest uppercase text-blue-600 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm">
-                                {grupo.categoria}
-                            </span>
-                        </div>
-                    )}
-                    <h3 className={`text-lg font-bold mb-3 leading-tight transition-colors line-clamp-2 ${grupo.destaque ? 'text-violet-900 group-hover:text-violet-600' : 'text-slate-900 group-hover:text-blue-600'}`} title={grupo.nome}>
-                        {grupo.nome}
-                    </h3>
-                    <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">
-                        {grupo.descricao || 'Comunidade verificada e ativa.'}
-                    </p>
+                {/* Tag de categoria */}
+                <div className="mb-3">
+                    <span className="text-xs font-bold uppercase tracking-wide text-slate-400 bg-slate-700/50 px-2 py-1 rounded">
+                        {grupo.categoria}
+                    </span>
                 </div>
+
+                {/* Nome e descrição */}
+                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-emerald-400 transition-colors">
+                    {grupo.nome}
+                </h3>
+                <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                    {grupo.descricao || 'Comunidade verificada e ativa.'}
+                </p>
+
+                {/* Stats */}
+                {grupo.cliques !== undefined && grupo.cliques > 0 && (
+                    <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+                        <Users className="w-4 h-4" />
+                        {grupo.cliques} acessos
+                    </div>
+                )}
             </div>
 
-            {/* Cliques / Prova Social */}
-            {grupo.cliques !== undefined && grupo.cliques > 0 && (
-                <div className="px-6 py-2 flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    {grupo.cliques} acessos hoje
-                </div>
-            )}
-
-            <div className="p-6 pt-0 mt-auto">
+            {/* Botão */}
+            <div className="p-5 pt-0">
                 <a
                     href={grupo.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => {
-                        // Dispara incremento sem bloquear navegação
                         fetch('/api/click', {
                             method: 'POST',
                             body: JSON.stringify({ id: grupo.id }),
                             headers: { 'Content-Type': 'application/json' },
-                            keepalive: true // Garante que request termine mesmo saindo da página
+                            keepalive: true
                         }).catch(console.error)
                     }}
-                    className={`flex w-full items-center justify-center gap-2 text-sm font-bold py-3 rounded-xl transition-all shadow-sm ${grupo.destaque
-                        ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg'
-                        : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-emerald-500 hover:text-white hover:border-transparent hover:shadow-lg'
-                        }`}
+                    className="flex w-full items-center justify-center gap-2 text-sm font-bold py-3 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition"
                 >
-                    Entrar Agora
+                    Entrar
+                    <ExternalLink className="w-4 h-4" />
                 </a>
             </div>
         </div>
