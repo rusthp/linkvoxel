@@ -1,0 +1,26 @@
+name: Deploy na VPS (Contabo)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploying via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}           # IP da sua VPS
+          username: ${{ secrets.USERNAME }}   # root (ou outro usuário)
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # Chave Privada SSH
+          port: 22
+          script: |
+            cd /var/www/linkvoxel || exit
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart linkvoxel
