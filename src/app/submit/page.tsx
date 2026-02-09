@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { ArrowLeft, Link as LinkIcon, CheckCircle, Loader2 } from 'lucide-react'
 
 interface PreviewData {
     title: string | null
@@ -34,9 +35,8 @@ export default function EnviarPage() {
     // Função para normalizar texto (remove caracteres estilizados Unicode)
     const normalizarTexto = (texto: string): string => {
         return texto
-            .normalize('NFKD') // Decompõe caracteres Unicode
-            .replace(/[\u0300-\u036f]/g, '') // Remove acentos combinados
-            // Substituir caracteres estilizados comuns (small caps, cyrillic lookalikes)
+            .normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '')
             .replace(/[ғꜰ]/g, 'f')
             .replace(/ɪ/g, 'i').replace(/ʀ/g, 'r').replace(/ᴏ/g, 'o')
             .replace(/ᴜ/g, 'u').replace(/ʜ/g, 'h').replace(/ɴ/g, 'n')
@@ -54,58 +54,18 @@ export default function EnviarPage() {
     const detectarCategoria = (nome: string): string => {
         const n = normalizarTexto(nome)
 
-        // Figurinhas
         if (n.includes('figurinha') || n.includes('sticker') || n.includes('meme') || n.includes('gif')) return 'figurinhas'
+        if (n.includes('namoro') || n.includes('romance') || n.includes('amor') || n.includes('paquera') || n.includes('solteiro')) return 'namoro'
+        if (n.includes('anime') || n.includes('manga') || n.includes('otaku') || n.includes('naruto') || n.includes('dragon ball')) return 'animes'
+        if (n.includes('game') || n.includes('jogo') || n.includes('free fire') || n.includes('pubg') || n.includes('minecraft') || n.includes('gamer')) return 'jogos'
+        if (n.includes('futebol') || n.includes('flamengo') || n.includes('corinthians') || n.includes('palmeiras')) return 'futebol'
+        if (n.includes('filme') || n.includes('série') || n.includes('serie') || n.includes('netflix')) return 'filmes'
+        if (n.includes('promo') || n.includes('oferta') || n.includes('desconto') || n.includes('cupom') || n.includes('grátis')) return 'promocoes'
+        if (n.includes('afiliado') || n.includes('marketing') || n.includes('renda') || n.includes('dinheiro') || n.includes('ganhar')) return 'dinheiro'
+        if (n.includes('emprego') || n.includes('vaga') || n.includes('trabalho') || n.includes('freelancer')) return 'emprego'
+        if (n.includes('amizade') || n.includes('bate-papo') || n.includes('chat') || n.includes('conversa') || n.includes('amigo')) return 'amizade'
 
-        // Amor e Romance
-        if (n.includes('namoro') || n.includes('romance') || n.includes('amor') || n.includes('paquera') || n.includes('solteiro') || n.includes('relacionamento')) return 'amor'
-
-        // Desenhos e Animes
-        if (n.includes('anime') || n.includes('manga') || n.includes('otaku') || n.includes('naruto') || n.includes('dragon ball') || n.includes('one piece') || n.includes('desenho')) return 'animes'
-
-        // Games e Jogos
-        if (n.includes('game') || n.includes('jogo') || n.includes('free fire') || n.includes('pubg') || n.includes('minecraft') || n.includes('rpg') || n.includes('guild') || n.includes('clan') || n.includes('gamer') || n.includes('lol') || n.includes('valorant') || n.includes('fortnite')) return 'jogos'
-
-        // Futebol
-        if (n.includes('futebol') || n.includes('flamengo') || n.includes('corinthians') || n.includes('palmeiras') || n.includes('são paulo') || n.includes('sao paulo') || n.includes('vasco') || n.includes('sport') || n.includes('time')) return 'futebol'
-
-        // Esportes (outros)
-        if (n.includes('esporte') || n.includes('academia') || n.includes('fitness') || n.includes('treino') || n.includes('corrida') || n.includes('musculação')) return 'esportes'
-
-        // Emagrecimento
-        if (n.includes('emagrec') || n.includes('dieta') || n.includes('peso') || n.includes('low carb') || n.includes('jejum') || n.includes('nutrição')) return 'emagrecimento'
-
-        // Filmes e Séries
-        if (n.includes('filme') || n.includes('série') || n.includes('serie') || n.includes('netflix') || n.includes('cinema') || n.includes('marvel') || n.includes('dc')) return 'filmes'
-
-        // Carros e Motos
-        if (n.includes('carro') || n.includes('moto') || n.includes('veículo') || n.includes('veiculo') || n.includes('rebaixado') || n.includes('tuning') || n.includes('automovel')) return 'carros'
-
-        // Promoções
-        if (n.includes('promo') || n.includes('oferta') || n.includes('desconto') || n.includes('cupom') || n.includes('grátis') || n.includes('gratis') || n.includes('barato') || n.includes('frete')) return 'promocoes'
-
-        // Ganhar Dinheiro / Afiliados
-        if (n.includes('afiliado') || n.includes('marketing') || n.includes('renda') || n.includes('dinheiro') || n.includes('ganhar') || n.includes('investimento') || n.includes('trader') || n.includes('cripto') || n.includes('bitcoin')) return 'dinheiro'
-
-        // Compra e Venda
-        if (n.includes('compra') || n.includes('venda') || n.includes('vendo') || n.includes('troca') || n.includes('negoci') || n.includes('loja')) return 'compravenda'
-
-        // Educação / Estudos
-        if (n.includes('estudo') || n.includes('curso') || n.includes('concurso') || n.includes('enem') || n.includes('faculdade') || n.includes('escola') || n.includes('educa') || n.includes('aula')) return 'educacao'
-
-        // Emprego / Profissional
-        if (n.includes('emprego') || n.includes('vaga') || n.includes('trabalho') || n.includes('profissional') || n.includes('freelancer') || n.includes('dev') || n.includes('tech')) return 'profissional'
-
-        // Frases e Mensagens
-        if (n.includes('frase') || n.includes('mensagem') || n.includes('status') || n.includes('reflex') || n.includes('motivação') || n.includes('motivacao')) return 'frases'
-
-        // Recrutamento (genérico)
-        if (n.includes('recrutamento') || n.includes('recruta')) return 'jogos'
-
-        // Amizade (padrão)
-        if (n.includes('amizade') || n.includes('bate-papo') || n.includes('chat') || n.includes('conversa') || n.includes('amigo') || n.includes('galera')) return 'amizade'
-
-        return '' // Não detectou
+        return ''
     }
 
     // Estados de feedback
@@ -120,8 +80,8 @@ export default function EnviarPage() {
         }
 
         // Validar formato do link
-        if (!link.includes('chat.whatsapp.com') && !link.includes('telegram.me') && !link.includes('t.me') && !link.includes('discord.gg')) {
-            setError('Link inválido. Use links do WhatsApp, Telegram ou Discord.')
+        if (!link.includes('chat.whatsapp.com') && !link.includes('wa.me') && !link.includes('telegram.me') && !link.includes('t.me')) {
+            setError('Link inválido. Use links do WhatsApp ou Telegram.')
             return
         }
 
@@ -140,13 +100,11 @@ export default function EnviarPage() {
             if (data.success) {
                 setPreview(data)
                 setNome(data.title || '')
-                // Ignorar descrições genéricas do WhatsApp/Telegram
                 const descGenerica = ['WhatsApp Group Invite', 'Telegram: Contact', 'Join group chat']
                 const descValida = data.description && !descGenerica.some(g => data.description?.includes(g))
                 setDescricao(descValida ? data.description : '')
                 setImagemUrl(data.image || '')
 
-                // Detectar categoria automaticamente pelo nome
                 if (data.title) {
                     const categoriaDetectada = detectarCategoria(data.title)
                     if (categoriaDetectada) {
@@ -154,14 +112,12 @@ export default function EnviarPage() {
                     }
                 }
             } else {
-                // Mesmo sem metadados, permite continuar
                 setPreview({ title: null, description: null, image: null })
             }
 
             setStep('form')
         } catch (err) {
             console.error(err)
-            // Continua mesmo com erro
             setPreview({ title: null, description: null, image: null })
             setStep('form')
         } finally {
@@ -181,7 +137,6 @@ export default function EnviarPage() {
             setError('Selecione uma categoria')
             return
         }
-
 
         setLoading(true)
         setError('')
@@ -212,19 +167,35 @@ export default function EnviarPage() {
         }
     }
 
+    const categorias = [
+        { id: 'amizade', label: 'Amizade', icon: '👋' },
+        { id: 'figurinhas', label: 'Figurinhas', icon: '🎭' },
+        { id: 'namoro', label: 'Amor/Romance', icon: '💕' },
+        { id: 'jogos', label: 'Games', icon: '🎮' },
+        { id: 'futebol', label: 'Futebol', icon: '⚽' },
+        { id: 'animes', label: 'Animes', icon: '🎌' },
+        { id: 'filmes', label: 'Filmes & Séries', icon: '🎬' },
+        { id: 'promocoes', label: 'Promoções', icon: '🏷️' },
+        { id: 'dinheiro', label: 'Dinheiro', icon: '💰' },
+        { id: 'emprego', label: 'Vagas', icon: '💼' },
+        { id: 'outros', label: 'Outros', icon: '📌' }
+    ]
+
     // Tela de sucesso
     if (enviado) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4">
-                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-slate-100">
-                    <div className="text-6xl mb-6">🎉</div>
-                    <h1 className="text-2xl font-bold text-slate-900 mb-3">Grupo Enviado!</h1>
-                    <p className="text-slate-600 mb-8">
+            <div className="min-h-screen bg-[#0f172a] flex items-center justify-center px-4">
+                <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8 max-w-md w-full text-center">
+                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-white mb-3">Grupo Enviado!</h1>
+                    <p className="text-slate-400 mb-8">
                         Seu grupo está em análise e será publicado em breve.
                     </p>
                     <Link
                         href="/"
-                        className="inline-block bg-slate-900 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-800 transition"
+                        className="inline-block bg-emerald-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-emerald-600 transition"
                     >
                         Voltar ao Diretório
                     </Link>
@@ -234,58 +205,61 @@ export default function EnviarPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12 px-4">
+        <div className="min-h-screen bg-[#0f172a] py-12 px-4">
             <div className="max-w-2xl mx-auto">
 
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/" className="text-slate-500 hover:text-slate-900 text-sm font-medium flex items-center gap-2 mb-6">
-                        ← Voltar
+                    <Link href="/" className="text-slate-400 hover:text-white text-sm font-medium flex items-center gap-2 mb-6 transition">
+                        <ArrowLeft className="w-4 h-4" />
+                        Voltar
                     </Link>
-                    <h1 className="text-3xl font-bold text-slate-900 mb-2">Enviar Novo Grupo</h1>
-                    <p className="text-slate-500">Cole o link e verificaremos automaticamente</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">Enviar Novo Grupo</h1>
+                    <p className="text-slate-400">Cole o link e verificaremos automaticamente</p>
                 </div>
 
                 {/* Mensagem de erro */}
                 {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl mb-6">
                         {error}
                     </div>
                 )}
 
                 {/* STEP 1: Link */}
                 {step === 'link' && (
-                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-100">
+                    <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center text-violet-600 font-bold">
+                            <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
                                 1
                             </div>
                             <div>
-                                <h2 className="font-bold text-slate-900">Cole o Link do Grupo</h2>
-                                <p className="text-sm text-slate-500">WhatsApp, Telegram ou Discord</p>
+                                <h2 className="font-bold text-white">Cole o Link do Grupo</h2>
+                                <p className="text-sm text-slate-400">WhatsApp ou Telegram</p>
                             </div>
                         </div>
 
-                        <input
-                            type="url"
-                            value={link}
-                            onChange={(e) => setLink(e.target.value)}
-                            placeholder="https://chat.whatsapp.com/..."
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-lg focus:ring-2 focus:ring-violet-200 focus:border-violet-500 outline-none transition mb-6"
-                            autoFocus
-                        />
+                        <div className="relative mb-6">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <LinkIcon className="w-5 h-5 text-slate-500" />
+                            </div>
+                            <input
+                                type="url"
+                                value={link}
+                                onChange={(e) => setLink(e.target.value)}
+                                placeholder="https://chat.whatsapp.com/..."
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-12 pr-4 py-4 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none transition"
+                                autoFocus
+                            />
+                        </div>
 
                         <button
                             onClick={handleValidarLink}
                             disabled={loading}
-                            className="w-full bg-violet-600 text-white font-bold py-4 rounded-xl hover:bg-violet-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl hover:bg-emerald-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <>
-                                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
                                     Verificando...
                                 </>
                             ) : (
@@ -303,8 +277,8 @@ export default function EnviarPage() {
                     <div className="space-y-6">
 
                         {/* Preview Card */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                            <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-6 py-4">
+                        <div className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+                            <div className="bg-emerald-500 px-6 py-4">
                                 <h2 className="text-white font-bold flex items-center gap-2">
                                     <span className="text-xl">✨</span>
                                     Preview do Grupo
@@ -314,26 +288,26 @@ export default function EnviarPage() {
                             <div className="p-6">
                                 <div className="flex gap-4">
                                     {/* Imagem */}
-                                    <div className="w-24 h-24 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200">
+                                    <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-700 flex-shrink-0 border border-slate-600">
                                         {imagemUrl ? (
                                             <img src={imagemUrl} alt="Preview" className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-3xl">
-                                                {{ 'amizade': '👋', 'amor': '💕', 'animes': '🎌', 'carros': '🚗', 'compravenda': '🛒', 'dinheiro': '💰', 'educacao': '📚', 'emagrecimento': '⚖️', 'esportes': '🏃', 'figurinhas': '🎭', 'filmes': '🎬', 'frases': '💬', 'futebol': '⚽', 'jogos': '🎮', 'profissional': '💼', 'promocoes': '🏷️' }[categoria] || '💬'}
+                                                {categorias.find(c => c.id === categoria)?.icon || '💬'}
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-bold text-slate-900 text-lg truncate">
+                                        <h3 className="font-bold text-white text-lg truncate">
                                             {nome || 'Nome do Grupo'}
                                         </h3>
-                                        <p className="text-slate-500 text-sm line-clamp-2 mt-1">
+                                        <p className="text-slate-400 text-sm line-clamp-2 mt-1">
                                             {descricao || 'Descrição do grupo...'}
                                         </p>
-                                        <span className="inline-block mt-2 text-xs font-bold uppercase text-violet-600 bg-violet-50 px-2 py-1 rounded">
-                                            {categoria || 'categoria'}
+                                        <span className="inline-block mt-2 text-xs font-bold uppercase text-emerald-400 bg-emerald-500/20 px-2 py-1 rounded">
+                                            {categorias.find(c => c.id === categoria)?.label || 'categoria'}
                                         </span>
                                     </div>
                                 </div>
@@ -341,21 +315,21 @@ export default function EnviarPage() {
                         </div>
 
                         {/* Formulário Editável */}
-                        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 border border-slate-100">
+                        <form onSubmit={handleSubmit} className="bg-slate-800 rounded-2xl border border-slate-700 p-8">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-bold">
+                                <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
                                     2
                                 </div>
                                 <div>
-                                    <h2 className="font-bold text-slate-900">Confirme os Dados</h2>
-                                    <p className="text-sm text-slate-500">Edite se necessário</p>
+                                    <h2 className="font-bold text-white">Confirme os Dados</h2>
+                                    <p className="text-sm text-slate-400">Edite se necessário</p>
                                 </div>
                             </div>
 
                             <div className="space-y-5">
                                 {/* Nome */}
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                    <label className="block text-sm font-bold text-slate-300 mb-2">
                                         Nome do Grupo *
                                     </label>
                                     <input
@@ -363,14 +337,14 @@ export default function EnviarPage() {
                                         value={nome}
                                         onChange={(e) => setNome(e.target.value)}
                                         placeholder="Ex: Promoções Brasil Oficial"
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-violet-200 focus:border-violet-500 outline-none transition"
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none transition"
                                         required
                                     />
                                 </div>
 
                                 {/* Descrição */}
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                    <label className="block text-sm font-bold text-slate-300 mb-2">
                                         Descrição
                                     </label>
                                     <textarea
@@ -378,44 +352,31 @@ export default function EnviarPage() {
                                         onChange={(e) => setDescricao(e.target.value)}
                                         placeholder="Descreva o propósito da comunidade..."
                                         rows={3}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-violet-200 focus:border-violet-500 outline-none transition resize-none"
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none transition resize-none"
                                     />
                                 </div>
 
                                 {/* Categoria */}
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                    <label className="block text-sm font-bold text-slate-300 mb-2">
                                         Categoria *
                                     </label>
                                     <select
                                         value={categoria}
                                         onChange={(e) => setCategoria(e.target.value)}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-violet-200 focus:border-violet-500 outline-none transition appearance-none"
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-emerald-500 focus:outline-none transition appearance-none"
                                         required
                                     >
                                         <option value="">Selecione uma categoria...</option>
-                                        <option value="amizade">👋 Amizade</option>
-                                        <option value="amor">💕 Amor e Romance</option>
-                                        <option value="animes">🎌 Desenhos e Animes</option>
-                                        <option value="carros">🚗 Carros e Motos</option>
-                                        <option value="compravenda">🛒 Compra e Venda</option>
-                                        <option value="dinheiro">💰 Ganhar Dinheiro</option>
-                                        <option value="educacao">📚 Educação</option>
-                                        <option value="emagrecimento">⚖️ Emagrecimento</option>
-                                        <option value="esportes">🏃 Esportes</option>
-                                        <option value="figurinhas">🎭 Figurinhas e Stickers</option>
-                                        <option value="filmes">🎬 Filmes e Séries</option>
-                                        <option value="frases">💬 Frases e Mensagens</option>
-                                        <option value="futebol">⚽ Futebol</option>
-                                        <option value="jogos">🎮 Games e Jogos</option>
-                                        <option value="profissional">💼 Profissional</option>
-                                        <option value="promocoes">🏷️ Promoções</option>
+                                        {categorias.map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.icon} {cat.label}</option>
+                                        ))}
                                     </select>
                                 </div>
 
                                 {/* Link (readonly) */}
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                    <label className="block text-sm font-bold text-slate-300 mb-2">
                                         Link do Grupo
                                     </label>
                                     <div className="flex gap-2">
@@ -423,7 +384,7 @@ export default function EnviarPage() {
                                             type="url"
                                             value={link}
                                             readOnly
-                                            className="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-slate-500 cursor-not-allowed"
+                                            className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-400 cursor-not-allowed"
                                         />
                                         <button
                                             type="button"
@@ -434,83 +395,47 @@ export default function EnviarPage() {
                                                 setDescricao('')
                                                 setImagemUrl('')
                                             }}
-                                            className="px-4 py-3 bg-slate-200 rounded-xl text-slate-700 hover:bg-slate-300 transition font-medium"
+                                            className="px-4 py-3 bg-slate-700 rounded-xl text-slate-300 hover:bg-slate-600 transition font-medium"
                                         >
                                             Trocar
                                         </button>
                                     </div>
                                 </div>
 
-                                {/* Regras do Grupo (opcional) */}
+                                {/* Regras do Grupo */}
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-3">
+                                    <label className="block text-sm font-bold text-slate-300 mb-3">
                                         Regras do seu Grupo
                                     </label>
-                                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={regras.adulto}
-                                                onChange={(e) => setRegras({ ...regras, adulto: e.target.checked })}
-                                                className="w-5 h-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                                            />
-                                            <span className="text-slate-700">Proibido conteúdo adulto</span>
-                                        </label>
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={regras.agressivo}
-                                                onChange={(e) => setRegras({ ...regras, agressivo: e.target.checked })}
-                                                className="w-5 h-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                                            />
-                                            <span className="text-slate-700">Proibido conteúdo agressivo</span>
-                                        </label>
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={regras.palavroes}
-                                                onChange={(e) => setRegras({ ...regras, palavroes: e.target.checked })}
-                                                className="w-5 h-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                                            />
-                                            <span className="text-slate-700">Proibido uso de palavrões</span>
-                                        </label>
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={regras.travaZap}
-                                                onChange={(e) => setRegras({ ...regras, travaZap: e.target.checked })}
-                                                className="w-5 h-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                                            />
-                                            <span className="text-slate-700">Proibido trava zap</span>
-                                        </label>
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={regras.menorIdade}
-                                                onChange={(e) => setRegras({ ...regras, menorIdade: e.target.checked })}
-                                                className="w-5 h-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                                            />
-                                            <span className="text-slate-700">Proibido menor de idade</span>
-                                        </label>
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={regras.spamLinks}
-                                                onChange={(e) => setRegras({ ...regras, spamLinks: e.target.checked })}
-                                                className="w-5 h-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                                            />
-                                            <span className="text-slate-700">Proibido enviar links/spam</span>
-                                        </label>
+                                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {[
+                                            { key: 'adulto', label: 'Conteúdo adulto' },
+                                            { key: 'agressivo', label: 'Conteúdo agressivo' },
+                                            { key: 'palavroes', label: 'Uso de palavrões' },
+                                            { key: 'travaZap', label: 'Trava zap' },
+                                            { key: 'menorIdade', label: 'Menor de idade' },
+                                            { key: 'spamLinks', label: 'Links/Spam' }
+                                        ].map(regra => (
+                                            <label key={regra.key} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-800 rounded-lg transition">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={regras[regra.key as keyof typeof regras]}
+                                                    onChange={(e) => setRegras({ ...regras, [regra.key]: e.target.checked })}
+                                                    className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
+                                                />
+                                                <span className="text-slate-300 text-sm">Proibido {regra.label}</span>
+                                            </label>
+                                        ))}
                                     </div>
                                     <p className="text-xs text-slate-500 mt-2">Marque as regras que se aplicam ao seu grupo.</p>
                                 </div>
 
                                 {/* Dica VIP */}
-                                <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-100 rounded-xl p-4 flex gap-3">
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex gap-3">
                                     <div className="text-xl">🚀</div>
                                     <div>
-                                        <h4 className="font-bold text-violet-800 text-sm mb-1">Dica VIP:</h4>
-                                        <p className="text-violet-600 text-sm leading-relaxed">
+                                        <h4 className="font-bold text-emerald-400 text-sm mb-1">Dica VIP:</h4>
+                                        <p className="text-emerald-300/80 text-sm leading-relaxed">
                                             Após a aprovação, você poderá <span className="font-bold">destacar seu grupo</span> para receber até 3x mais acessos!
                                         </p>
                                     </div>
@@ -520,9 +445,16 @@ export default function EnviarPage() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl hover:bg-emerald-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
-                                    {loading ? 'Enviando...' : 'Publicar Grupo'}
+                                    {loading ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        'Publicar Grupo'
+                                    )}
                                 </button>
                             </div>
                         </form>
