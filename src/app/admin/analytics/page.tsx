@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
                 {/* Gráfico de Barras - Top 10 Grupos */}
                 <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
                     <h2 className="font-bold text-white mb-4">📊 Top 10 Grupos por Cliques</h2>
-                    <div className="h-72">
+                    <div className="h-72" style={{ minHeight: 288 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={barChartData} layout="vertical" margin={{ left: 0, right: 20 }}>
                                 <XAxis type="number" stroke="#64748b" fontSize={12} />
@@ -151,7 +151,7 @@ export default function AnalyticsPage() {
                 {/* Gráfico de Pizza - Por Categoria */}
                 <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
                     <h2 className="font-bold text-white mb-4">🎯 Cliques por Categoria</h2>
-                    <div className="h-72">
+                    <div className="h-72" style={{ minHeight: 288 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
