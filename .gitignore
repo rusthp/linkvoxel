@@ -41,3 +41,38 @@ yarn-error.log*
 next-env.d.ts
 .mcp.json
 .vscode/
+
+# Rulebook - ignore runtime data, keep specs and tasks
+/.rulebook/*
+!/.rulebook/specs/
+!/.rulebook/tasks/
+!/.rulebook/tasks/**/*.md
+!/.rulebook/rulebook.json
+
+# Patterns added by @hivellm/rulebook
+# Added at: 2026-05-16T20:53:50.976Z
+
+*.log
+*.swo
+*.swp
+*.tsbuildinfo.*
+*~
+.cache/
+.env
+.env.*.local
+.env.local
+.idea/
+.tsc/
+Thumbs.db
+build/
+dist/
+logs/
+node_modules/
+out/
+temp/
+tmp/
+
+CLAUDE.local.md
+.rulebook/backup/
+.rulebook/handoff/_pending.md
+.rulebook/handoff/.urgent
